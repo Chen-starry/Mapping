@@ -102,18 +102,18 @@ class ResidualBlock(nn.Module):
 class ResNet(nn.Module):
     def __init__(self):
         super().__init__()
-        # 初始映射层，将25维输入映射到512维
+        # 初始映射层，将25维输入映射到1024维
         self.initial = nn.Sequential(
-            nn.Linear(25, 512),
-            nn.BatchNorm1d(512),
+            nn.Linear(25, 1024),
+            nn.BatchNorm1d(1024),
             nn.LeakyReLU(0.2),
         )
         # 后续残差块
-        self.res_block1 = ResidualBlock(512, 512, dropout=0.2)
-        self.res_block2 = ResidualBlock(512, 1024, dropout=0.3)
-        self.res_block3 = ResidualBlock(1024, 2048, dropout=0.4)
+        self.res_block1 = ResidualBlock(1024, 1024, dropout=0.2)
+        self.res_block2 = ResidualBlock(1024, 2048, dropout=0.3)
+        self.res_block3 = ResidualBlock(2048, 4096, dropout=0.4)
         # 最终映射层，将2048维映射到1600维输出
-        self.fc_out = nn.Linear(2048, 1600)
+        self.fc_out = nn.Linear(4096, 1600)
 
         # 权重初始化
         for m in self.modules():
@@ -143,7 +143,7 @@ def train_model_with_early_stop(model, train_loader, test_loader, epochs=1000):
     model.to(device)
 
     criterion = nn.MSELoss()
-    optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
+    optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.OneCycleLR(
         optimizer,
         max_lr=1e-3,
