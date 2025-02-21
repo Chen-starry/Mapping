@@ -37,18 +37,18 @@ class ResidualBlock(nn.Module):
 class ResNet(nn.Module):
     def __init__(self):
         super().__init__()
-        # 初始映射层，将25维输入映射到512维
+        # 初始映射层，将25维输入映射到1024维
         self.initial = nn.Sequential(
-            nn.Linear(25, 512),
-            nn.BatchNorm1d(512),
+            nn.Linear(25, 1024),
+            nn.BatchNorm1d(1024),
             nn.LeakyReLU(0.2),
         )
         # 后续残差块
-        self.res_block1 = ResidualBlock(512, 512, dropout=0.2)
-        self.res_block2 = ResidualBlock(512, 1024, dropout=0.3)
-        self.res_block3 = ResidualBlock(1024, 2048, dropout=0.4)
-        # 最终映射层，将2048维映射到1600维输出
-        self.fc_out = nn.Linear(2048, 1600)
+        self.res_block1 = ResidualBlock(1024, 1024, dropout=0.3)
+        self.res_block2 = ResidualBlock(1024, 2048, dropout=0.4)
+        self.res_block3 = ResidualBlock(2048, 4096, dropout=0.5)
+        # 最终映射层，将4096维映射到1600维输出
+        self.fc_out = nn.Linear(4096, 1600)
 
         # 权重初始化（保持与训练时一致）
         for m in self.modules():
@@ -92,7 +92,7 @@ input_tensor = torch.tensor(input_scaled, dtype=torch.float32)
 
 # 使用模型进行预测
 with torch.no_grad():
-    output_scaled = model(input_tensor).cpu().numpy()  # 形状: (512, 1600)
+    output_scaled = model(input_tensor).cpu().numpy()  # 形状: (样本数, 1600)
 
 # 反标准化预测结果（恢复到原始数值尺度）
 output_pred = y_scaler.inverse_transform(output_scaled)
