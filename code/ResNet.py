@@ -109,10 +109,10 @@ class ResNet(nn.Module):
             nn.LeakyReLU(0.2),
         )
         # 后续残差块
-        self.res_block1 = ResidualBlock(1024, 1024, dropout=0.2)
-        self.res_block2 = ResidualBlock(1024, 2048, dropout=0.3)
-        self.res_block3 = ResidualBlock(2048, 4096, dropout=0.4)
-        # 最终映射层，将2048维映射到1600维输出
+        self.res_block1 = ResidualBlock(1024, 1024, dropout=0.3)
+        self.res_block2 = ResidualBlock(1024, 2048, dropout=0.4)
+        self.res_block3 = ResidualBlock(2048, 4096, dropout=0.5)
+        # 最终映射层，将4096维映射到1600维输出
         self.fc_out = nn.Linear(4096, 1600)
 
         # 权重初始化
